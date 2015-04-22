@@ -1,5 +1,7 @@
 function Board(game, boardId, width, height) {
 
+	var that = this;
+
 	// Reference to the game object that contains the board. Useful for setting
 	// up event handlers. Note that even though Javascript technically doesn't
 	// have references, and is always pass-by-value, objects are represented
@@ -10,52 +12,40 @@ function Board(game, boardId, width, height) {
 	// SVG DOM element
 	var svg = document.getElementById(boardId);
 
-	// Line segments belonging to the squares.
-	var lines = [];
+	// Game board parameters. Used to draw the correct number of dots and squares.
+	var boxWidth = svg.width.baseVal.value;
+	var boxHeight = svg.height.baseVal.value;
+	var squareWidth = boxWidth / (width + 1);
+	var squareHeight = boxHeight / (height + 1);
 
-	// 2D array of squares.
-	var squares = [];
-
-	// Circle style.
-	var circleRadius = 10;
-	var circleOutline = 'black';
-	var circleOutlineWidth = 1;
-	var circleFill = 'black';
+	// 2D array of vertices
+	var vertices = [];
 
 	/*************************************************************************/
 
 	/**
-	 * Private: Draws a single dot on the gameboard at the specified coordinate.
+	 * Initialize the vertices on the board.
 	 */
-	var drawDot = function (x, y) {
+	var initDots = function () {
 
-		var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-
-		circle.setAttribute('cx', x);
-		circle.setAttribute('cy', y);
-		circle.setAttribute('r', circleRadius);
-		circle.setAttribute('stroke', circleOutline);
-		circle.setAttribute('stroke-width', circleOutlineWidth);
-		circle.setAttribute('fill', circleFill);
-
-		svg.appendChild(circle);
+		for (var y = 0; y <= height; y++) {
+			vertices[y] = [];
+			for (var x = 0; x <= width; x++) {
+				vertices[y][x] = new Vertex(that, x, y);
+			}
+		}
 	}
 
 	/*************************************************************************/
 
 	/**
-	 * Private: Draws the dots.
+	 * Private: Draw the dots.
 	 */
 	var drawDots = function () {
 
-		var boxWidth = svg.width.baseVal.value;
-		var boxHeight = svg.height.baseVal.value;
-		var squareWidth = boxWidth / width;
-		var squareHeight = boxHeight / height;
-
-		for (var x = circleRadius; x < boxWidth; x += squareWidth) {
-			for (var y = circleRadius; y < boxHeight; y += squareHeight) {
-				drawDot(x, y);
+		for (var i = 0; i < vertices.length; i++) {
+			for (var j = 0; j < vertices[i].length; j++) {
+				vertices[i][j].draw();
 			}
 		}
 	}
@@ -74,23 +64,22 @@ function Board(game, boardId, width, height) {
 	/*************************************************************************/
 
 	/**
-	 * Public: Draws the game board and attaches event handlers to each piece.
+	 * Public: Accessors for important members of the gameboard.
 	 */
-	this.draw = function () {
-
-		// TODO
-		drawDots();
-	}
+	this.getSvg          = function () {return svg}
+	this.getSquareWidth  = function () {return squareWidth}
+	this.getSquareHeight = function () {return squareHeight}
 
 	/*************************************************************************/
 
 	/**
-	 * Public: Activates the selected line segment and gives credit for the
-	 * activation to the specified player.
+	 * Public: Draws the game board.
 	 */
-	this.markLine = function (player, vertex1, vertex2) {
+	this.draw = function () {
 
-		// TODO
+		initDots();
+		// TODO: draw lines
+		drawDots();
 	}
 }
 
