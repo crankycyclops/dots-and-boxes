@@ -21,10 +21,6 @@ function Board(game, boardId, width, height) {
 	// 2D array of vertices
 	var vertices = [];
 
-	// Line segment parameters
-	var lineWidth = 4;
-	var lineColor = '#cccccc';
-
 	/*************************************************************************/
 
 	/**
@@ -56,6 +52,9 @@ function Board(game, boardId, width, height) {
 
 	/*************************************************************************/
 
+	/**
+	 * Draws a line segment and attaches to it the appropriate event handlers.
+	 */
 	var drawLine = function (vertex1, vertex2) {
 
 		var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -64,8 +63,27 @@ function Board(game, boardId, width, height) {
 		line.setAttribute('y1', vertex1.getRadius() + vertex1.getY() * squareHeight);
 		line.setAttribute('x2', vertex2.getRadius() + vertex2.getX() * squareWidth);
 		line.setAttribute('y2', vertex2.getRadius() + vertex2.getY() * squareHeight);
-		line.setAttribute('stroke-width', lineWidth);
-		line.setAttribute('stroke', lineColor);
+		line.setAttribute('class', 'segment');
+
+		// used to retrieve the vertice pair associated with the line on a click event
+		line.setAttribute('data-vx1', vertex1.getX());
+		line.setAttribute('data-vy1', vertex1.getY());
+		line.setAttribute('data-vx2', vertex2.getX());
+		line.setAttribute('data-vy2', vertex2.getY());
+
+		// mark the line segment as taken whenever it's clicked on
+		line.addEventListener('click', function (e) {
+
+			// make sure the segment hasn't already been taken before completing the turn
+			if (!e.target.getAttribute('data-taken')) {
+
+				var vertex1 = vertices[e.target.getAttribute('data-vy1')][e.target.getAttribute('data-vx1')];
+				var vertex2 = vertices[e.target.getAttribute('data-vy2')][e.target.getAttribute('data-vx2')];
+
+				game.completeTurn(vertex1, vertex2);
+				e.target.setAttribute('data-taken', 1);
+			}
+		});
 
 		svg.appendChild(line);
 	}
@@ -73,7 +91,7 @@ function Board(game, boardId, width, height) {
 	/*************************************************************************/
 
 	/**
-	 * Draws the line segments between the vertices and attaches event handlers.
+	 * Draws line segments between the vertices.
 	 */
 	var drawLines = function () {
 

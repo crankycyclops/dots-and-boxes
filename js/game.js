@@ -41,7 +41,9 @@ function Game(options) {
 	 */
 	this.completeTurn = function (vertex1, vertex2) {
 
-		board.markLine(players[curPlayer], vertex1, vertex2);
+		// TODO
+		alert('TODO: player ' + players[curPlayer]['name']);
+		//board.markLine(players[curPlayer], vertex1, vertex2);
 
 		// move on to the next player
 		curPlayer++;

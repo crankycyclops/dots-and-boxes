@@ -3,3 +3,13 @@
 	margin-left: 20px;
 }
 
+.segment {
+	stroke-width: 5;
+	stroke: #cccccc;
+}
+
+.segment:hover {
+	stroke-width: 5;
+	stroke: #ff9999;
+}
+
