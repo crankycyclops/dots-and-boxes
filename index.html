@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html>
+
+	<head>
+
+		<script src="js/board.js"></script>
+		<script src="js/game.js"></script>
+
+		<style>
+			body {
+				margin: 0px;
+				padding: 0px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+
+		<svg id="gameboard" height="500" width="500"></svg>
+
+		<script>
+
+			var game = new Game({
+
+				width: 4,
+				height: 4,
+				numPlayers: 2,
+
+				// function to get a player's data is defined externally so
+				// that the game object can be easily ported between applications
+				// (that is, if you really like my implementation that much...)
+				getPlayerData: function (playerNum) {
+
+					// Random color generation stolen from:
+					// http://www.paulirish.com/2009/random-hex-color-code-snippets/
+					var player = {
+						name: prompt("Enter player #" + playerNum + "'s name: "),
+						color: '#' + Math.floor(Math.random() * 16777215).toString(16)
+					};
+
+					return player;
+				}
+			});
+
+			game.start();
+
+		</script>
+
+	</body>
+
+</html>
+
