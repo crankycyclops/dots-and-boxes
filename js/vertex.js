@@ -9,6 +9,15 @@ function Vertex(board, x, y) {
 	/*************************************************************************/
 
 	/**
+	 * Public: Accessors for the vertex's coordinate and radius.
+	 */
+	this.getX      = function () {return x}
+	this.getY      = function () {return y}
+	this.getRadius = function () {return radius}
+
+	/*************************************************************************/
+
+	/**
 	 * Public: Draws the vertex as a dot on the gameboard.
 	 */
 	this.draw = function () {

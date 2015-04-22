@@ -21,6 +21,10 @@ function Board(game, boardId, width, height) {
 	// 2D array of vertices
 	var vertices = [];
 
+	// Line segment parameters
+	var lineWidth = 4;
+	var lineColor = '#cccccc';
+
 	/*************************************************************************/
 
 	/**
@@ -46,6 +50,44 @@ function Board(game, boardId, width, height) {
 		for (var i = 0; i < vertices.length; i++) {
 			for (var j = 0; j < vertices[i].length; j++) {
 				vertices[i][j].draw();
+			}
+		}
+	}
+
+	/*************************************************************************/
+
+	var drawLine = function (vertex1, vertex2) {
+
+		var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+
+		line.setAttribute('x1', vertex1.getRadius() + vertex1.getX() * squareWidth);
+		line.setAttribute('y1', vertex1.getRadius() + vertex1.getY() * squareHeight);
+		line.setAttribute('x2', vertex2.getRadius() + vertex2.getX() * squareWidth);
+		line.setAttribute('y2', vertex2.getRadius() + vertex2.getY() * squareHeight);
+		line.setAttribute('stroke-width', lineWidth);
+		line.setAttribute('stroke', lineColor);
+
+		svg.appendChild(line);
+	}
+
+	/*************************************************************************/
+
+	/**
+	 * Draws the line segments between the vertices and attaches event handlers.
+	 */
+	var drawLines = function () {
+
+		// Draw the horizontal lines
+		for (y = 0; y < vertices.length; y++) {
+			for (x = 0; x < vertices[y].length - 1; x++) {
+				drawLine(vertices[y][x], vertices[y][x + 1]);
+			}
+		}
+
+		// Draw the vertical lines
+		for (y = 0; y < vertices.length - 1; y++) {
+			for (x = 0; x < vertices[y].length; x++) {
+				drawLine(vertices[y][x], vertices[y + 1][x]);
 			}
 		}
 	}
@@ -78,7 +120,7 @@ function Board(game, boardId, width, height) {
 	this.draw = function () {
 
 		initDots();
-		// TODO: draw lines
+		drawLines();
 		drawDots();
 	}
 }
