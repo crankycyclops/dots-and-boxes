@@ -24,7 +24,7 @@ function Board(game, boardId, width, height) {
 	/*************************************************************************/
 
 	/**
-	 * Initialize the vertices on the board.
+	 * Private: Initialize the vertices on the board.
 	 */
 	var initDots = function () {
 
@@ -53,9 +53,9 @@ function Board(game, boardId, width, height) {
 	/*************************************************************************/
 
 	/**
-	 * Draws a line segment and attaches to it the appropriate event handlers.
+	 * Private: Draws a line segment and attaches the appropriate event handlers.
 	 */
-	var drawLine = function (vertex1, vertex2) {
+	var drawLine = function (type, vertex1, vertex2) {
 
 		var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
 
@@ -64,8 +64,11 @@ function Board(game, boardId, width, height) {
 		line.setAttribute('x2', vertex2.getRadius() + vertex2.getX() * squareWidth);
 		line.setAttribute('y2', vertex2.getRadius() + vertex2.getY() * squareHeight);
 		line.setAttribute('class', 'segment');
+		line.setAttribute('data-type', type);
 
 		// used to retrieve the vertice pair associated with the line on a click event
+		line.setAttribute('id', 'line-' + vertex1.getX() + '-' +
+			vertex1.getY() + '-' + vertex2.getX() + '-' + vertex2.getY());
 		line.setAttribute('data-vx1', vertex1.getX());
 		line.setAttribute('data-vy1', vertex1.getY());
 		line.setAttribute('data-vx2', vertex2.getX());
@@ -76,11 +79,7 @@ function Board(game, boardId, width, height) {
 
 			// make sure the segment hasn't already been taken before completing the turn
 			if (!e.target.getAttribute('data-taken')) {
-
-				var vertex1 = vertices[e.target.getAttribute('data-vy1')][e.target.getAttribute('data-vx1')];
-				var vertex2 = vertices[e.target.getAttribute('data-vy2')][e.target.getAttribute('data-vx2')];
-
-				game.completeTurn(vertex1, vertex2);
+				game.completeTurn(e.target);
 				e.target.setAttribute('data-taken', 1);
 			}
 		});
@@ -91,22 +90,41 @@ function Board(game, boardId, width, height) {
 	/*************************************************************************/
 
 	/**
-	 * Draws line segments between the vertices.
+	 * Private: Draws line segments between the vertices.
 	 */
 	var drawLines = function () {
 
 		// Draw the horizontal lines
 		for (y = 0; y < vertices.length; y++) {
 			for (x = 0; x < vertices[y].length - 1; x++) {
-				drawLine(vertices[y][x], vertices[y][x + 1]);
+				drawLine('horizontal', vertices[y][x], vertices[y][x + 1]);
 			}
 		}
 
 		// Draw the vertical lines
 		for (y = 0; y < vertices.length - 1; y++) {
 			for (x = 0; x < vertices[y].length; x++) {
-				drawLine(vertices[y][x], vertices[y + 1][x]);
+				drawLine('vertical', vertices[y][x], vertices[y + 1][x]);
 			}
+		}
+	}
+
+	/*************************************************************************/
+
+	/**
+	 * Private: Checks whether or not any boxes were completed. If so, they're
+	 * marked as completed by the specified player.
+	 */
+	var checkBoxes = function (player, line) {
+
+		// check squares on the top and bottom of the line
+		if ('horizontal' == line.getAttribute('data-type')) {
+			// TODO
+		}
+
+		// check squares to the left and right of the line
+		else {
+			// TODO
 		}
 	}
 
@@ -129,6 +147,20 @@ function Board(game, boardId, width, height) {
 	this.getSvg          = function () {return svg}
 	this.getSquareWidth  = function () {return squareWidth}
 	this.getSquareHeight = function () {return squareHeight}
+
+	/*************************************************************************/
+
+	/**
+	 * Public: Claims a line in the name of the specified player.
+	 */
+	this.claimLine = function (player, line) {
+
+		line.setAttribute('data-player', player.index);
+		line.setAttribute('style', 'stroke: ' + player.color + ' !important');
+
+		// check for box completion
+		checkBoxes(player, line);
+	}
 
 	/*************************************************************************/
 

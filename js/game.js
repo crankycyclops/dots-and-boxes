@@ -19,6 +19,8 @@ function Game(options) {
 
 		for (var i = 0; i < options.numPlayers; i++) {
 			players[i] = options.getPlayerData(i + 1);
+			players[i].index = i;
+			players[i].points = 0;
 		}
 	}
 
@@ -39,11 +41,9 @@ function Game(options) {
 	 * Public: Called whenever the current player clicks on a line segment.
 	 * This completes that player's turn.
 	 */
-	this.completeTurn = function (vertex1, vertex2) {
+	this.completeTurn = function (line) {
 
-		// TODO
-		alert('TODO: player ' + players[curPlayer]['name']);
-		//board.markLine(players[curPlayer], vertex1, vertex2);
+		board.claimLine(players[curPlayer], line);
 
 		// move on to the next player
 		curPlayer++;
