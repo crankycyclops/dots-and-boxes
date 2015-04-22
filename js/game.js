@@ -18,9 +18,14 @@ function Game(options) {
 	var getPlayers = function () {
 
 		for (var i = 0; i < options.numPlayers; i++) {
+
 			players[i] = options.getPlayerData(i + 1);
 			players[i].index = i;
 			players[i].points = 0;
+
+			// Random color generation stolen from:
+			// http://www.paulirish.com/2009/random-hex-color-code-snippets/
+			players[i].color = '#' + Math.floor(Math.random() * 16777215).toString(16);
 		}
 	}
 
