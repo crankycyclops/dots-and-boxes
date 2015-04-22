@@ -62,6 +62,13 @@ function Line(board, type, index, vertex1, vertex2) {
 	/*************************************************************************/
 
 	/**
+	 * Public: Returns the line's player (or false if not claimed.)
+	 */
+	this.getPlayer = function () {return player}
+
+	/*************************************************************************/
+
+	/**
 	 * Public: Returns true if the line has been claimed and false if not.
 	 */
 	this.isClaimed = function () {return player ? true : false}

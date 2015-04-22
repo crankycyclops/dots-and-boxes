@@ -92,6 +92,33 @@ function Board(game, boardId, width, height) {
 	/*************************************************************************/
 
 	/**
+	 * Private: Fills in the square defined by the four lines (in an array) using
+	 * a player's color.
+	 */
+	var fillBox = function (player, lines) {
+
+		var xVals = [];
+		var yVals = [];
+
+		for (var i = 0; i < 4; i++) {
+			xVals.push(lines[i].getVertex1().getX());
+			xVals.push(lines[i].getVertex2().getX());
+			yVals.push(lines[i].getVertex1().getY());
+			yVals.push(lines[i].getVertex2().getY());
+		}
+
+		// figure out coordinates of fill square
+		var minX = Math.min.apply(Math, xVals);
+		var maxX = Math.max.apply(Math, xVals);
+		var minY = Math.min.apply(Math, yVals);
+		var maxY = Math.max.apply(Math, yVals);
+
+		// TODO: draw fill square
+	}
+
+	/*************************************************************************/
+
+	/**
 	 * Private: Checks whether or not any boxes were completed. If so, they're
 	 * marked as completed by the specified player. Returns number of newly
 	 * completed squares.
@@ -116,6 +143,7 @@ function Board(game, boardId, width, height) {
 			if (topTop && topTop.isClaimed() &&
 			topLeft && topLeft.isClaimed() &&
 			topRight && topRight.isClaimed()) {
+				fillBox(line.getPlayer(), [line, topRight, topTop, topLeft]);
 				score++;
 			}
 
@@ -127,6 +155,7 @@ function Board(game, boardId, width, height) {
 			if (bottomBottom && bottomBottom.isClaimed() &&
 			bottomLeft && bottomLeft.isClaimed() &&
 			bottomRight && bottomRight.isClaimed()) {
+				fillBox(line.getPlayer(), [line, bottomRight, bottomBottom, bottomLeft]);
 				score++;
 			}
 		}
@@ -142,6 +171,7 @@ function Board(game, boardId, width, height) {
 			if (leftLeft && leftLeft.isClaimed() &&
 			leftTop && leftTop.isClaimed() &&
 			leftBottom && leftBottom.isClaimed()) {
+				fillBox(line.getPlayer(), [line, leftTop, leftLeft, leftBottom]);
 				score++;
 			}
 
@@ -153,6 +183,7 @@ function Board(game, boardId, width, height) {
 			if (rightRight && rightRight.isClaimed() &&
 			rightTop && rightTop.isClaimed() &&
 			rightBottom && rightBottom.isClaimed()) {
+				fillBox(line.getPlayer(), [line, rightBottom, rightRight, rightTop]);
 				score++;
 			}
 		}
