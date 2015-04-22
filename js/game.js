@@ -37,6 +37,7 @@ function Game(options) {
 	this.start = function () {
 
 		getPlayers();
+		board.init();
 		board.draw();
 	}
 

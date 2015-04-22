@@ -21,6 +21,9 @@ function Board(game, boardId, width, height) {
 	// 2D array of vertices
 	var vertices = [];
 
+	// Lines connecting the vertices
+	var lines = [];
+
 	/*************************************************************************/
 
 	/**
@@ -39,72 +42,28 @@ function Board(game, boardId, width, height) {
 	/*************************************************************************/
 
 	/**
-	 * Private: Draw the dots.
+	 * Private: Initializes the line segments between the vertices.
 	 */
-	var drawDots = function () {
+	var initLines = function () {
 
-		for (var i = 0; i < vertices.length; i++) {
-			for (var j = 0; j < vertices[i].length; j++) {
-				vertices[i][j].draw();
-			}
-		}
-	}
-
-	/*************************************************************************/
-
-	/**
-	 * Private: Draws a line segment and attaches the appropriate event handlers.
-	 */
-	var drawLine = function (type, vertex1, vertex2) {
-
-		var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-
-		line.setAttribute('x1', vertex1.getRadius() + vertex1.getX() * squareWidth);
-		line.setAttribute('y1', vertex1.getRadius() + vertex1.getY() * squareHeight);
-		line.setAttribute('x2', vertex2.getRadius() + vertex2.getX() * squareWidth);
-		line.setAttribute('y2', vertex2.getRadius() + vertex2.getY() * squareHeight);
-		line.setAttribute('class', 'segment');
-		line.setAttribute('data-type', type);
-
-		// used to retrieve the vertice pair associated with the line on a click event
-		line.setAttribute('id', 'line-' + vertex1.getX() + '-' +
-			vertex1.getY() + '-' + vertex2.getX() + '-' + vertex2.getY());
-		line.setAttribute('data-vx1', vertex1.getX());
-		line.setAttribute('data-vy1', vertex1.getY());
-		line.setAttribute('data-vx2', vertex2.getX());
-		line.setAttribute('data-vy2', vertex2.getY());
-
-		// mark the line segment as taken whenever it's clicked on
-		line.addEventListener('click', function (e) {
-
-			// make sure the segment hasn't already been taken before completing the turn
-			if (!e.target.getAttribute('data-taken')) {
-				game.completeTurn(e.target);
-				e.target.setAttribute('data-taken', 1);
-			}
-		});
-
-		svg.appendChild(line);
-	}
-
-	/*************************************************************************/
-
-	/**
-	 * Private: Draws line segments between the vertices.
-	 */
-	var drawLines = function () {
+		// current index into array of lines
+		var index = 0;
 
 		// Draw the horizontal lines
 		for (y = 0; y < vertices.length; y++) {
 			for (x = 0; x < vertices[y].length - 1; x++) {
-				drawLine('horizontal', vertices[y][x], vertices[y][x + 1]);
+				var line = new Line(that, 'horizontal', index, vertices[y][x], vertices[y][x + 1]);
+				lines.push(line);
+				index++;
 			}
 		}
 
 		// Draw the vertical lines
 		for (y = 0; y < vertices.length - 1; y++) {
 			for (x = 0; x < vertices[y].length; x++) {
-				drawLine('vertical', vertices[y][x], vertices[y + 1][x]);
+				var line = new Line(that, 'vertical', index, vertices[y][x], vertices[y + 1][x]);
+				lines.push(line);
+				index++;
 			}
 		}
 	}
@@ -112,12 +71,10 @@ function Board(game, boardId, width, height) {
 	/*************************************************************************/
 
 	/**
-	 * Returns true if the line segment referenced by the coordinates is claimed,
-	 * false if it's not and null if the segment is out of bounds.
-	 *
-	 * Note: coordN[0] = X and coordN[1] = Y
+	 * Private: Takes as input a pair of [x, y] coordinates and returns the line
+	 * if it exists or null if it doesn't or if it's out of bounds.
 	 */
-	var isClaimed = function (coord1, coord2) {
+	var getLine = function (coord1, coord2) {
 
 		// out of bounds
 		if (coord1[0] < 0 || coord1[1] < 0 || coord1[0] > width || coord1[1] > height) {
@@ -128,8 +85,8 @@ function Board(game, boardId, width, height) {
 			return null;
 		}
 
-		var line = document.getElementById('line-' + coord1[0] + '-' + coord1[1] + '-' + coord2[0] + '-' + coord2[1]);
-		return (!line || !line.getAttribute('data-player')) ? false : true;
+		var lineDOM = document.getElementById('line-' + coord1[0] + '-' + coord1[1] + '-' + coord2[0] + '-' + coord2[1]);
+		return !lineDOM ? null : lines[parseInt(lineDOM.getAttribute('data-index'))];
 	}
 
 	/*************************************************************************/
@@ -141,31 +98,35 @@ function Board(game, boardId, width, height) {
 	 */
 	var checkBoxes = function (line) {
 
-		var lineX1 = parseInt(line.getAttribute('data-vx1'));
-		var lineY1 = parseInt(line.getAttribute('data-vy1'));
-		var lineX2 = parseInt(line.getAttribute('data-vx2'));
-		var lineY2 = parseInt(line.getAttribute('data-vy2'));
+		var lineX1 = line.getVertex1().getX();
+		var lineY1 = line.getVertex1().getY();
+		var lineX2 = line.getVertex2().getX();
+		var lineY2 = line.getVertex2().getY();
 
 		var score = 0;
 
 		// check squares on the top and bottom of the line
-		if ('horizontal' == line.getAttribute('data-type')) {
+		if ('horizontal' == line.getType()) {
 
 			// top square
-			if (
-				isClaimed([lineX1, lineY1 - 1], [lineX2, lineY2 - 1]) &&
-				isClaimed([lineX1, lineY1 - 1], [lineX1, lineY1]) &&
-				isClaimed([lineX2, lineY2 - 1], [lineX2, lineY2])
-			) {
+			var topTop = getLine([lineX1, lineY1 - 1], [lineX2, lineY2 - 1]);
+			var topLeft = getLine([lineX1, lineY1 - 1], [lineX1, lineY1]);
+			var topRight = getLine([lineX2, lineY2 - 1], [lineX2, lineY2]);
+
+			if (topTop && topTop.isClaimed() &&
+			topLeft && topLeft.isClaimed() &&
+			topRight && topRight.isClaimed()) {
 				score++;
 			}
 
 			// bottom square
-			if (
-				isClaimed([lineX1, lineY1 + 1], [lineX2, lineY2 + 1]) &&
-				isClaimed([lineX1, lineY1], [lineX1, lineY1 + 1]) &&
-				isClaimed([lineX2, lineY2], [lineX2, lineY2 + 1])
-			) {
+			var bottomBottom = getLine([lineX1, lineY1 + 1], [lineX2, lineY2 + 1]);
+			var bottomLeft = getLine([lineX1, lineY1], [lineX1, lineY1 + 1]);
+			var bottomRight = getLine([lineX2, lineY2], [lineX2, lineY2 + 1]);
+
+			if (bottomBottom && bottomBottom.isClaimed() &&
+			bottomLeft && bottomLeft.isClaimed() &&
+			bottomRight && bottomRight.isClaimed()) {
 				score++;
 			}
 		}
@@ -174,20 +135,24 @@ function Board(game, boardId, width, height) {
 		else {
 
 			// left square
-			if (
-				isClaimed([lineX1 - 1, lineY1], [lineX2 - 1, lineY2]) &&
-				isClaimed([lineX1 - 1, lineY1], [lineX1, lineY1]) &&
-				isClaimed([lineX2 - 1, lineY2], [lineX2, lineY2])
-			) {
+			var leftLeft = getLine([lineX1 - 1, lineY1], [lineX2 - 1, lineY2]);
+			var leftTop = getLine([lineX1 - 1, lineY1], [lineX1, lineY1]);
+			var leftBottom = getLine([lineX2 - 1, lineY2], [lineX2, lineY2]);
+
+			if (leftLeft && leftLeft.isClaimed() &&
+			leftTop && leftTop.isClaimed() &&
+			leftBottom && leftBottom.isClaimed()) {
 				score++;
 			}
 
 			// right square
-			if (
-				isClaimed([lineX1 + 1, lineY1], [lineX2 + 1, lineY2]) &&
-				isClaimed([lineX1, lineY1], [lineX1 + 1, lineY1]) &&
-				isClaimed([lineX2, lineY2], [lineX2 + 1, lineY2]))
-			{
+			var rightRight = getLine([lineX1 + 1, lineY1], [lineX2 + 1, lineY2]);
+			var rightTop = getLine([lineX1, lineY1], [lineX1 + 1, lineY1]);
+			var rightBottom = getLine([lineX2, lineY2], [lineX2 + 1, lineY2]);
+
+			if (rightRight && rightRight.isClaimed() &&
+			rightTop && rightTop.isClaimed() &&
+			rightBottom && rightBottom.isClaimed()) {
 				score++;
 			}
 		}
@@ -209,24 +174,24 @@ function Board(game, boardId, width, height) {
 	/*************************************************************************/
 
 	/**
-	 * Public: Accessors for important members of the gameboard.
+	 * Public: Claims a line in the name of the specified player and checks
+	 * for box completion by said player.
 	 */
-	this.getSvg          = function () {return svg}
-	this.getSquareWidth  = function () {return squareWidth}
-	this.getSquareHeight = function () {return squareHeight}
+	this.claimLine = function (player, line) {
+
+		line.claim(player);
+		return checkBoxes(line);
+	}
 
 	/*************************************************************************/
 
 	/**
-	 * Public: Claims a line in the name of the specified player.
+	 * Public: Initializes the gameboard's lines and vertices.
 	 */
-	this.claimLine = function (player, line) {
+	this.init = function () {
 
-		line.setAttribute('data-player', player.index);
-		line.setAttribute('style', 'stroke: ' + player.color + ' !important');
-
-		// check for box completion
-		return checkBoxes(line);
+		initDots();
+		initLines();
 	}
 
 	/*************************************************************************/
@@ -236,9 +201,26 @@ function Board(game, boardId, width, height) {
 	 */
 	this.draw = function () {
 
-		initDots();
-		drawLines();
-		drawDots();
-	}
-}
+		// draw the lines
+		for (var i = 0; i < lines.length; i++) {
+			lines[i].draw();
+		}
 
+		// draw the vertices (should be on top of the lines)
+		for (var i = 0; i < vertices.length; i++) {
+			for (var j = 0; j < vertices[i].length; j++) {
+				vertices[i][j].draw();
+			}
+		}
+	}
+
+	/*************************************************************************/
+
+	/**
+	 * Public: Accessors for important members of the gameboard.
+	 */
+	this.getSvg          = function () {return svg}
+	this.getGame         = function () {return game}
+	this.getSquareWidth  = function () {return squareWidth}
+	this.getSquareHeight = function () {return squareHeight}
+}
