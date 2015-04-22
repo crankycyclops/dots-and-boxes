@@ -112,20 +112,87 @@ function Board(game, boardId, width, height) {
 	/*************************************************************************/
 
 	/**
-	 * Private: Checks whether or not any boxes were completed. If so, they're
-	 * marked as completed by the specified player.
+	 * Returns true if the line segment referenced by the coordinates is claimed,
+	 * false if it's not and null if the segment is out of bounds.
+	 *
+	 * Note: coordN[0] = X and coordN[1] = Y
 	 */
-	var checkBoxes = function (player, line) {
+	var isClaimed = function (coord1, coord2) {
+
+		// out of bounds
+		if (coord1[0] < 0 || coord1[1] < 0 || coord1[0] > width || coord1[1] > height) {
+			return null;
+		}
+
+		else if (coord2[0] < 0 || coord2[1] < 0 || coord2[0] > width || coord2[1] > height) {
+			return null;
+		}
+
+		var line = document.getElementById('line-' + coord1[0] + '-' + coord1[1] + '-' + coord2[0] + '-' + coord2[1]);
+		return (!line || !line.getAttribute('data-player')) ? false : true;
+	}
+
+	/*************************************************************************/
+
+	/**
+	 * Private: Checks whether or not any boxes were completed. If so, they're
+	 * marked as completed by the specified player. Returns number of newly
+	 * completed squares.
+	 */
+	var checkBoxes = function (line) {
+
+		var lineX1 = parseInt(line.getAttribute('data-vx1'));
+		var lineY1 = parseInt(line.getAttribute('data-vy1'));
+		var lineX2 = parseInt(line.getAttribute('data-vx2'));
+		var lineY2 = parseInt(line.getAttribute('data-vy2'));
+
+		var score = 0;
 
 		// check squares on the top and bottom of the line
 		if ('horizontal' == line.getAttribute('data-type')) {
-			// TODO
+
+			// top square
+			if (
+				isClaimed([lineX1, lineY1 - 1], [lineX2, lineY2 - 1]) &&
+				isClaimed([lineX1, lineY1 - 1], [lineX1, lineY1]) &&
+				isClaimed([lineX2, lineY2 - 1], [lineX2, lineY2])
+			) {
+				score++;
+			}
+
+			// bottom square
+			if (
+				isClaimed([lineX1, lineY1 + 1], [lineX2, lineY2 + 1]) &&
+				isClaimed([lineX1, lineY1], [lineX1, lineY1 + 1]) &&
+				isClaimed([lineX2, lineY2], [lineX2, lineY2 + 1])
+			) {
+				score++;
+			}
 		}
 
 		// check squares to the left and right of the line
 		else {
-			// TODO
+
+			// left square
+			if (
+				isClaimed([lineX1 - 1, lineY1], [lineX2 - 1, lineY2]) &&
+				isClaimed([lineX1 - 1, lineY1], [lineX1, lineY1]) &&
+				isClaimed([lineX2 - 1, lineY2], [lineX2, lineY2])
+			) {
+				score++;
+			}
+
+			// right square
+			if (
+				isClaimed([lineX1 + 1, lineY1], [lineX2 + 1, lineY2]) &&
+				isClaimed([lineX1, lineY1], [lineX1 + 1, lineY1]) &&
+				isClaimed([lineX2, lineY2], [lineX2 + 1, lineY2]))
+			{
+				score++;
+			}
 		}
+
+		return score;
 	}
 
 	/*************************************************************************/
@@ -159,7 +226,7 @@ function Board(game, boardId, width, height) {
 		line.setAttribute('style', 'stroke: ' + player.color + ' !important');
 
 		// check for box completion
-		checkBoxes(player, line);
+		return checkBoxes(line);
 	}
 
 	/*************************************************************************/

@@ -43,11 +43,16 @@ function Game(options) {
 	 */
 	this.completeTurn = function (line) {
 
-		board.claimLine(players[curPlayer], line);
+		var score = board.claimLine(players[curPlayer], line);
+		if (score > 0) {
+			players[curPlayer].score += score;
+		}
 
-		// move on to the next player
-		curPlayer++;
-		curPlayer %= options.numPlayers;
+		// move on to the next player if a square wasn't completed
+		else {
+			curPlayer++;
+			curPlayer %= options.numPlayers;
+		}
 	}
 
 	/*************************************************************************/
