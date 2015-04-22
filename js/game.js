@@ -3,6 +3,9 @@ function Game(options) {
 	// Private: Represents players in the game.
 	var players = [];
 
+	// Private: Index pointing to the current player in players.
+	var curPlayer = 0;
+
 	// Private: The game board.
 	var board;
 
@@ -21,6 +24,32 @@ function Game(options) {
 
 	/*************************************************************************/
 
+	/**
+	 * Public: Starts the game.
+	 */
+	this.start = function () {
+
+		getPlayers();
+		board.draw();
+	}
+
+	/*************************************************************************/
+
+	/**
+	 * Public: Called whenever the current player clicks on a line segment.
+	 * This completes that player's turn.
+	 */
+	this.completeTurn = function (vertex1, vertex2) {
+
+		board.markLine(players[curPlayer], vertex1, vertex2);
+
+		// move on to the next player
+		curPlayer++;
+		curPlayer %= options.numPlayers;
+	}
+
+	/*************************************************************************/
+
 	if (typeof(options.width) != 'number' || options.width < 1) {
 		throw "width must be at least 1";
 	}
@@ -33,21 +62,14 @@ function Game(options) {
 		throw "numPlayers must be set and must be an integer greater than or equal to 2";
 	}
 
+	if (typeof(options.boardId) != 'string' || options.boardId.length < 1) {
+		throw "the id of the gameboard's SVG tag must be specified";
+	}
+
 	if (typeof(options.getPlayerData) != 'function') {
 		throw "getPlayerData must be set and must be a function";
 	}
 
-	board = new Board(options.width, options.height);
-
-	/*************************************************************************/
-
-	/**
-	 * Public: Starts the game.
-	 */
-	this.start = function () {
-
-		getPlayers();
-		board.draw();
-	}
+	board = new Board(this, options.boardId, options.width, options.height);
 }
 
