@@ -1,3 +1,11 @@
+/* Simple reset */
+body {
+	margin: 0px;
+	padding: 0px;
+}
+
+/******************************************************************************/
+
 #gameboard {
 	margin-top: 20px;
 	margin-left: 20px;

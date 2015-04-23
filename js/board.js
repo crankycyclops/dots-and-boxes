@@ -24,6 +24,9 @@ function Board(game, boardId, width, height) {
 	// Lines connecting the vertices
 	var lines = [];
 
+	// Used only for drawing a player's color when a square is claimed
+	var squares = [];
+
 	/*************************************************************************/
 
 	/**
@@ -71,6 +74,25 @@ function Board(game, boardId, width, height) {
 	/*************************************************************************/
 
 	/**
+	 * Private: Initializes squares (used only for drawing a player's colors
+	 * when the square is claimed.)
+	 */
+	var initSquares = function () {
+
+		// using this to get the default radius (not sure this is the best solution...)
+		var dummyVertex = new Vertex(that, 0, 0);
+
+		for (var y = 0; y < height; y++) {
+			squares[y] = [];
+			for (var x = 0; x < width; x++) {
+				squares[y][x] = new Square(that, x, y, dummyVertex.getRadius());
+			}
+		}
+	}
+
+	/*************************************************************************/
+
+	/**
 	 * Private: Takes as input a pair of [x, y] coordinates and returns the line
 	 * if it exists or null if it doesn't or if it's out of bounds.
 	 */
@@ -87,33 +109,6 @@ function Board(game, boardId, width, height) {
 
 		var lineDOM = document.getElementById('line-' + coord1[0] + '-' + coord1[1] + '-' + coord2[0] + '-' + coord2[1]);
 		return !lineDOM ? null : lines[parseInt(lineDOM.getAttribute('data-index'))];
-	}
-
-	/*************************************************************************/
-
-	/**
-	 * Private: Fills in the square defined by the four lines (in an array) using
-	 * a player's color.
-	 */
-	var fillBox = function (player, lines) {
-
-		var xVals = [];
-		var yVals = [];
-
-		for (var i = 0; i < 4; i++) {
-			xVals.push(lines[i].getVertex1().getX());
-			xVals.push(lines[i].getVertex2().getX());
-			yVals.push(lines[i].getVertex1().getY());
-			yVals.push(lines[i].getVertex2().getY());
-		}
-
-		// figure out coordinates of fill square
-		var minX = Math.min.apply(Math, xVals);
-		var maxX = Math.max.apply(Math, xVals);
-		var minY = Math.min.apply(Math, yVals);
-		var maxY = Math.max.apply(Math, yVals);
-
-		// TODO: draw fill square
 	}
 
 	/*************************************************************************/
@@ -143,7 +138,7 @@ function Board(game, boardId, width, height) {
 			if (topTop && topTop.isClaimed() &&
 			topLeft && topLeft.isClaimed() &&
 			topRight && topRight.isClaimed()) {
-				fillBox(line.getPlayer(), [line, topRight, topTop, topLeft]);
+				squares[topLeft.getVertex1().getY()][topLeft.getVertex1().getX()].fill(line.getPlayer().color);
 				score++;
 			}
 
@@ -155,7 +150,7 @@ function Board(game, boardId, width, height) {
 			if (bottomBottom && bottomBottom.isClaimed() &&
 			bottomLeft && bottomLeft.isClaimed() &&
 			bottomRight && bottomRight.isClaimed()) {
-				fillBox(line.getPlayer(), [line, bottomRight, bottomBottom, bottomLeft]);
+				squares[line.getVertex1().getY()][line.getVertex1().getX()].fill(line.getPlayer().color);
 				score++;
 			}
 		}
@@ -171,7 +166,7 @@ function Board(game, boardId, width, height) {
 			if (leftLeft && leftLeft.isClaimed() &&
 			leftTop && leftTop.isClaimed() &&
 			leftBottom && leftBottom.isClaimed()) {
-				fillBox(line.getPlayer(), [line, leftTop, leftLeft, leftBottom]);
+				squares[leftTop.getVertex1().getY()][leftTop.getVertex1().getX()].fill(line.getPlayer().color);
 				score++;
 			}
 
@@ -183,7 +178,7 @@ function Board(game, boardId, width, height) {
 			if (rightRight && rightRight.isClaimed() &&
 			rightTop && rightTop.isClaimed() &&
 			rightBottom && rightBottom.isClaimed()) {
-				fillBox(line.getPlayer(), [line, rightBottom, rightRight, rightTop]);
+				squares[line.getVertex1().getY()][line.getVertex1().getX()].fill(line.getPlayer().color);
 				score++;
 			}
 		}
@@ -223,6 +218,7 @@ function Board(game, boardId, width, height) {
 
 		initDots();
 		initLines();
+		initSquares();
 	}
 
 	/*************************************************************************/
@@ -231,6 +227,13 @@ function Board(game, boardId, width, height) {
 	 * Public: Draws the game board.
 	 */
 	this.draw = function () {
+
+		// draw the squares (invisible until a player claims them)
+		for (var i = 0; i < squares.length; i++) {
+			for (var j = 0; j < squares[i].length; j++) {
+				squares[i][j].draw();
+			}
+		}
 
 		// draw the lines
 		for (var i = 0; i < lines.length; i++) {

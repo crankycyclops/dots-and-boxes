@@ -9,21 +9,20 @@
 
 		<script src="js/vertex.js"></script>
 		<script src="js/line.js"></script>
+		<script src="js/square.js"></script>
 		<script src="js/board.js"></script>
 		<script src="js/game.js"></script>
-
-		<style>
-			body {
-				margin: 0px;
-				padding: 0px;
-			}
-		</style>
 
 	</head>
 
 	<body>
 
-		<h3>Dots and Boxes</h3>
+		<h2>Dots and Boxes</h2>
+		<h4 id="current-player-display" style="display: none;">
+			Current player:
+			<span id="player-name"></span>
+		</h4>
+
 		<svg id="gameboard" height="500" width="500"></svg>
 
 		<script>
@@ -50,8 +49,12 @@
 				// Callback that displays the current player
 				displayCurrentPlayer: function (player) {
 
-					// TODO: make this pretty
-					alert(player.name + "'s turn!");
+					var playerName = document.getElementById('player-name');
+
+					playerName.setAttribute('style', 'color: ' + player.color + ';');
+					playerName.textContent = player.name;
+
+					document.getElementById('current-player-display').setAttribute('style', 'display: block;');
 				}
 			});
 
