@@ -46,9 +46,31 @@
 				// (that is, if you really like my implementation that much...)
 				getPlayerData: function (playerNum) {
 
+					/*** ATTENTION:
+					I WAS GOING TO PROMPT FOR THE USER'S NAME, BUT IT WASN'T
+					MENTIONED IN THE DIRECTIONS, AND I WANTED TO ADHERE AS
+					STRICTLY AS POSSIBLE TO THE REQUIREMENTS.
 					var player = {
 						name: prompt("Enter player #" + playerNum + "'s name: "),
 					};
+					***/
+
+					var player = {};
+
+					switch (playerNum) {
+
+						case 1:
+							player.name = 'Red';
+							break;
+
+						case 2:
+							player.name = 'Blue';
+							break;
+
+						default:
+							player.name = 'John Doe';
+							break;
+					}
 
 					return player;
 				},

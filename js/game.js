@@ -13,10 +13,10 @@ function Game(options) {
 	// Private: The game board.
 	var board;
 
-	// Optional callback that displays information about the current player.
+	// Private: Optional callback that displays information about the current player.
 	var displayCurrentPlayer = false;
 
-	// Optional callback that announces the winner.
+	// Private: Optional callback that announces the winner.
 	var displayWinner = false;
 
 	/*************************************************************************/
