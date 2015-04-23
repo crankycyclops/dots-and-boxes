@@ -1,3 +1,27 @@
+/**
+ * Game --
+ * Main entrypoint to the "Dots and Boxes" game. Provides public methods to
+ * start a game and to complete a turn (the latter is ordinarily called by a
+ * Line's onclick event handler.) Game handles scoring and interfaces with the
+ * UI via user-defined callbacks.
+ *
+ * Constructor Input:
+ *   - An object containing configuration information for the game. Some are
+ *     required and some are optional. The following options can be set:
+ *
+ *     width (required) - number of squares in the horizontal direction
+ *     height (required) - number of squares in the vertical direction
+ *     numPlayers (required) - number of players in the game
+ *     boardId (required) - HTML ID of the gameboard's SVG element
+ *     getPlayerData (required) - user-defined callback that retrieves information
+ *                                about each player
+ *     displayCurrentPlayer (optional) - user-defined callback that displays the
+ *                                       current player
+ *     displayWinner (optional) - user-defined callback that displays the winner
+ *                                when the game ends (if there is a winner)
+ *     displayTie (optional) - user-defined callback that displays the results of
+ *                             a tie
+ */
 function Game(options) {
 
 	// Private: Represents players in the game.

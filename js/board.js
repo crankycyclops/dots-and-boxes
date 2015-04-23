@@ -1,3 +1,15 @@
+/**
+ * Board --
+ * Game board object that contains vertices, lines and squares and that handles
+ * the completion of squares by players, as well as the drawing of all the
+ * elements inside the game board.
+ *
+ * Constructor Input:
+ *   - game: a reference to the parent Game object
+ *   - boardId: HTML ID of the game board's SVG element
+ *   - width: the number of squares in the horizontal direction
+ *   - height: the number of squares in the vertical direction
+ */
 function Board(game, boardId, width, height) {
 
 	var that = this;

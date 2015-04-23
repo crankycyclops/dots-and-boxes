@@ -5,7 +5,7 @@
  *
  * Constructor Input:
  *   - board: reference to the gameboard object
- *   - x and y: raw pixel coordinates inside the SVG field
+ *   - x and y: raw pixel coordinates inside the SVG element
  *   - offset: extra pixels to add to x and y due to the radius of the left-most
  *             dot pushing things down and right a little.
  */

@@ -1,3 +1,12 @@
+/**
+ * Vertex --
+ * Used to define Line objects and to draw a matrix of dots on the gameboard.
+ *
+ * Constructor Input:
+ *   - board: a reference to the parent game board
+ *   - x: horizontal coordinate (a grid coordinate, not a raw pixel location)
+ *   - y: vertical coordinate (a grid coordinate, not a raw pixel location)
+ */
 function Vertex(board, x, y) {
 
 	// Circle style.

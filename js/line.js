@@ -1,3 +1,16 @@
+/**
+ * Line --
+ * Represents line segments on the game board. Provides methods to draw lines on
+ * the game board and to claim lines by players.
+ *
+ * Constructor Input:
+ *   - board: reference to the parent game board
+ *   - type: one of 'horizontal' or 'vertical'
+ *   - index: array location of the line in the game board's array of lines
+ *            (used to easily retrieve the Line object using an onclick event
+ *            handler)
+ *   - vertex1 and vertex2: Vertex objects that define the Line.
+ */
 function Line(board, type, index, vertex1, vertex2) {
 
 	// player object if claimed or false if not
