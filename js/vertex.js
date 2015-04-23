@@ -10,7 +10,7 @@
 function Vertex(board, x, y) {
 
 	// Circle style.
-	var radius = 10;
+	var radius = 13;
 	var outlineWidth = 1;
 	var outline = 'black';
 	var fill = 'black';

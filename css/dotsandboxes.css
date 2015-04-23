@@ -16,12 +16,12 @@ body {
 }
 
 .segment {
-	stroke-width: 8;
+	stroke-width: 15;
 	stroke: #cccccc;
 }
 
 .segment:hover {
-	stroke-width: 8;
+	stroke-width: 15;
 	stroke: #ff9999;
 }
 
