@@ -167,7 +167,8 @@ function Game(options) {
 
 		// figure out if there are any ties
 		for (var i = 0; i < players.length; i++) {
-			if (players[i].score == highScorePlayer.score) {
+			if (players[i].score == highScorePlayer.score &&
+			players[i].index != highScorePlayer.index) {
 				highScoreTies.push(players[i]);
 			}
 		}
