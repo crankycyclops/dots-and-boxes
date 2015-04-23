@@ -17,13 +17,20 @@
 
 	<body>
 
-		<h2>Dots and Boxes</h2>
-		<h4 id="current-player-display" style="display: none;">
-			Current player:
-			<span id="player-name"></span>
-		</h4>
+		<div id="game-display">
 
-		<svg id="gameboard" height="500" width="500"></svg>
+			<h2>Dots and Boxes</h2>
+			<h4 id="current-player-display" style="display: none;">
+				Current player:
+				<span id="player-name"></span>
+			</h4>
+			<h4 id="winner-display" style="display: none;">
+				<span id="winner-name"></span> wins!
+			</h4>
+
+			<svg id="gameboard" height="550" width="550"></svg>
+
+		</div>
 
 		<script>
 
@@ -46,7 +53,7 @@
 					return player;
 				},
 
-				// Callback that displays the current player
+				// Callback that displays the current player.
 				displayCurrentPlayer: function (player) {
 
 					var playerName = document.getElementById('player-name');
@@ -55,6 +62,32 @@
 					playerName.textContent = player.name;
 
 					document.getElementById('current-player-display').setAttribute('style', 'display: block;');
+				},
+
+				// Callback that announces the winner.
+				displayWinner: function (player) {
+
+					// hide current player label
+					document.getElementById('current-player-display').setAttribute('style', 'display: none;');
+
+					// set and display winner
+					var winnerName = document.getElementById('winner-name');
+					winnerName.setAttribute('style', 'color: ' + player.color + ';');
+					winnerName.textContent = player.name;
+					document.getElementById('winner-display').setAttribute('style', 'display: block;');
+				},
+
+				// Callback that announces a tie. The Game object supports
+				// an arbitrary number of players, but this callback is
+				// written specifically for two players.
+				displayTie: function (players) {
+
+					// hide current player label
+					document.getElementById('current-player-display').setAttribute('style', 'display: none;');
+
+					// set and display tie message
+					document.getElementById('winner-display').innerHTML = 'Ah, shucks... Looks like it was a tie!';
+					document.getElementById('winner-display').setAttribute('style', 'display: block;');
 				}
 			});
 

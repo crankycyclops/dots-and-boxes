@@ -189,17 +189,6 @@ function Board(game, boardId, width, height) {
 	/*************************************************************************/
 
 	/**
-	 * Private: Deactivates the game board so that players can no longer click
-	 * on line segments.
-	 */
-	var deactivate = function () {
-
-		// TODO
-	}
-
-	/*************************************************************************/
-
-	/**
 	 * Public: Claims a line in the name of the specified player and checks
 	 * for box completion by said player.
 	 */

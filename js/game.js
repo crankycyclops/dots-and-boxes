@@ -6,11 +6,18 @@ function Game(options) {
 	// Private: Index pointing to the current player in players.
 	var curPlayer = 0;
 
+	// Once this adds up to the total number of squares, we declare a winner
+	// (or maybe a tie?)
+	var totalScore = 0;
+
 	// Private: The game board.
 	var board;
 
 	// Optional callback that displays information about the current player.
 	var displayCurrentPlayer = false;
+
+	// Optional callback that announces the winner.
+	var displayWinner = false;
 
 	/*************************************************************************/
 
@@ -40,6 +47,14 @@ function Game(options) {
 			displayCurrentPlayer = options.displayCurrentPlayer;
 		} else {
 			throw "displayCurrentPlayer must be a function";
+		}
+	}
+
+	if (typeof(options.displayWinner) != 'undefined') {
+		if ('function' == typeof(options.displayWinner)) {
+			displayWinner = options.displayWinner;
+		} else {
+			throw "displayWinner must be a function";
 		}
 	}
 
@@ -124,6 +139,42 @@ function Game(options) {
 	/*************************************************************************/
 
 	/**
+	 * Private: Figure out who won the game and announce the good news!
+	 */
+	var announceWinner = function () {
+
+		var highScoreTies = [];
+		var highScorePlayer = players[0];
+
+		// figure out the highest scoring player
+		for (var i = 0; i < players.length; i++) {
+
+			if (players[i].score > highScorePlayer.score) {
+				highScorePlayer = players[i];
+			}
+		}
+
+		// figure out if there are any ties
+		for (var i = 0; i < players.length; i++) {
+			if (players[i].score == highScorePlayer.score) {
+				highScoreTies.push(players[i]);
+			}
+		}
+
+		// Uh oh, there were ties!
+		if (highScoreTies.length > 0 && displayTie) {
+			displayTie(highScoreTies);
+		}
+
+		// Annnnd, we have a winner!
+		else if (displayWinner) {
+			displayWinner(highScorePlayer);
+		}
+	}
+
+	/*************************************************************************/
+
+	/**
 	 * Public: Starts the game.
 	 */
 	this.start = function () {
@@ -146,7 +197,15 @@ function Game(options) {
 
 		var score = board.claimLine(players[curPlayer], line);
 		if (score > 0) {
+
+			totalScore += score;
 			players[curPlayer].score += score;
+
+			// Check to see if all the squares have been filled in
+			if (totalScore == options.width * options.height) {
+				announceWinner();
+				return;
+			}
 		}
 
 		// move on to the next player if a square wasn't completed
