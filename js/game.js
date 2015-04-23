@@ -19,6 +19,9 @@ function Game(options) {
 	// Private: Optional callback that announces the winner.
 	var displayWinner = false;
 
+	// Private: Optional callback that announces a tie.
+	var displayTie = false;
+
 	/*************************************************************************/
 
 	if (typeof(options.width) != 'number' || options.width < 1) {
@@ -55,6 +58,14 @@ function Game(options) {
 			displayWinner = options.displayWinner;
 		} else {
 			throw "displayWinner must be a function";
+		}
+	}
+
+	if (typeof(options.displayTie) != 'undefined') {
+		if ('function' == typeof(options.displayTie)) {
+			displayTie = options.displayTie;
+		} else {
+			throw "displayTie must be a function";
 		}
 	}
 
@@ -106,7 +117,7 @@ function Game(options) {
 
 			players[i] = options.getPlayerData(i + 1);
 			players[i].index = i;
-			players[i].points = 0;
+			players[i].score = 0;
 			players[i].color = getPlayerColor(options.numPlayers, i);
 		}
 	}
@@ -196,6 +207,7 @@ function Game(options) {
 	this.completeTurn = function (line) {
 
 		var score = board.claimLine(players[curPlayer], line);
+
 		if (score > 0) {
 
 			totalScore += score;

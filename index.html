@@ -41,6 +41,8 @@
 				numPlayers: 2,
 				boardId: 'gameboard',
 
+				/**********************************************************/
+
 				// function to get a player's data is defined externally so
 				// that the game object can be easily ported between applications
 				// (that is, if you really like my implementation that much...)
@@ -75,6 +77,8 @@
 					return player;
 				},
 
+				/**********************************************************/
+
 				// Callback that displays the current player.
 				displayCurrentPlayer: function (player) {
 
@@ -85,6 +89,8 @@
 
 					document.getElementById('current-player-display').setAttribute('style', 'display: block;');
 				},
+
+				/**********************************************************/
 
 				// Callback that announces the winner.
 				displayWinner: function (player) {
@@ -98,6 +104,8 @@
 					winnerName.textContent = player.name;
 					document.getElementById('winner-display').setAttribute('style', 'display: block;');
 				},
+
+				/**********************************************************/
 
 				// Callback that announces a tie. The Game object supports
 				// an arbitrary number of players, but this callback is
